@@ -28,12 +28,16 @@ class checked_service (
   # Call out to hiera for a hash of services that we want to manage on this
   # particular machine.
   # See the 'tests' directory for an example yaml file that has one.
-  $checked_services = hiera_hash('checked_service::services')
-  if $checked_services {
+  # If hiera didn't come back with a list of services to manage, we print
+  # a warning.
+  $checked_services = hiera_hash('checked_service::services',undef)
+  if $checked_services != undef {
     create_resources( checked_service::service, $checked_services )
   }
   else {
-    notify { 'Warning: hiera contained no checked_services for this node': }
+    notify { 'hiera warning':
+      message => 'Note: hiera has no checked_service::services for this node',
+    }
   }
 
 }
