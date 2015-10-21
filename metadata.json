@@ -1,0 +1,14 @@
+{
+  "name": "gabe-checked_service",
+  "version": "0.1.0",
+  "author": "PuppetLabs Professional Services",
+  "summary": "Manages service resources only after a script has successfully run",
+  "license": "Apache 2.0",
+  "source": "https://github.com/fnaard/puppet-checked_service",
+  "project_page": "https://github.com/fnaard/puppet-checked_service",
+  "issues_url": "https://github.com/fnaard/puppet-checked_service/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
+  ]
+}
+
