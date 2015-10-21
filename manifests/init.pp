@@ -25,4 +25,15 @@ class checked_service (
     content => template("checked_service/${script_name}.erb"),
   }
 
+  # Call out to hiera for a hash of services that we want to manage on this
+  # particular machine.
+  # See the 'tests' directory for an example yaml file that has one.
+  $checked_services = hiera_hash('checked_service::services')
+  if $checked_services {
+    create_resources( checked_service::service, $checked_services )
+  }
+  else {
+    notify { 'Warning: hiera contained no checked_services for this node': }
+  }
+
 }
