@@ -11,6 +11,8 @@
 define checked_service::service (
   $service_name  = $title,
   $ensure        = 'running',
+  $enable        = 'true',
+
   $check_retries = '',
 ) {
 
@@ -21,6 +23,7 @@ define checked_service::service (
 
   service { $service_name:
     ensure => $ensure,
+    enable => $enable,
   }
 
 }
