@@ -14,8 +14,8 @@ class checked_service (
   $script_group    = $::checked_service::params::script_group,
 ) inherits checked_service::params {
 
-  # Create a script from a template.  This is intended to be a script that
-  # checks the status of a dependent service in Zabbix.
+  # Manage a simple Zabbix-checking script that accepts arguments for what
+  # service' status to check, and how many times to retry if it's not ready yet.
   file { 'check service script':
     ensure  => file,
     mode    => '0755',
@@ -25,8 +25,12 @@ class checked_service (
     content => template("checked_service/${script_name}.erb"),
   }
 
+  # Make sure the script is there, before trying to manage any of the services
+  # that will be using it.
+  File['check service script'] -> Checked_service::Service <| |>
+
   # Call out to hiera for a hash of services that we want to manage on this
-  # particular machine.
+  # particular machine.  Then, hand that hash to create_resources().
   # See the 'tests' directory for an example yaml file that has one.
   # If hiera didn't come back with a list of services to manage, we print
   # a warning.
