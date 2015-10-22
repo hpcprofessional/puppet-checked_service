@@ -12,6 +12,7 @@ class checked_service (
   $script_template = $::checked_service::params::script_template,
   $script_owner    = $::checked_service::params::script_owner,
   $script_group    = $::checked_service::params::script_group,
+  $path_to_ruby    = $::checked_service::params::path_to_ruby
 ) inherits checked_service::params {
 
   # Manage a simple Zabbix-checking script that accepts arguments for what

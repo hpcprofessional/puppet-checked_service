@@ -8,14 +8,16 @@ class checked_service::params {
 
   case $::kernel {
     'windows': {
-      $script_dir      = 'C:\Windows\Temp'
-      $script_owner    = 'Administrator'
-      $script_group    = 'Administrators'
+      $script_dir   = 'C:\Windows\Temp'
+      $script_owner = 'Administrator'
+      $script_group = 'Administrators'
+      $path_to_ruby = 'C:\Program Files\Puppet Labs\Puppet Enterprise\sys\ruby\bin\ruby.exe'
     }
     'Linux': {
-      $script_dir      = '/tmp'
-      $script_owner    = 'root'
-      $script_group    = 'root'
+      $script_dir   = '/tmp'
+      $script_owner = 'root'
+      $script_group = 'root'
+      $path_to_ruby = '/opt/puppet/bin/ruby'
     }
     default: {
       # In the *very* unlikely case ..

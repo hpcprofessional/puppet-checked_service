@@ -9,18 +9,35 @@
 # Refer to the module's README.md file for examples.
 
 define checked_service::service (
-  $service_name  = $title,
-  $ensure        = 'running',
-  $enable        = 'true',
+  $service_name          = $title,
+  $ensure                = 'running',
+  $enable                = 'true',
 
-  $check_retries = '',
+  $checker_argument      = $title,
+  $checker_tries         = 4,
+  $checker_timeout       = 60,
+
+  $service_start_command = undef,
+  $service_stop_command  = undef,
 ) {
 
-  exec { "/usr/bin/echo checking dependency of ${service_name}":
-    unless => '/bin/true',
-    before => Service[$service_name],
+  # In case we're being declared directly, make sure the main class is here too.
+  include checked_service
+
+  # Invoke the Zabbix checker
+  exec { "Check prerequisite of ${service_name}":
+    command  => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} ${checker_argument}",
+    unless   => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} ${checker_argument}",
+    before   => Service[$service_name],
+    provider => $::kernel ? {
+      'Linux' => 'posix',
+      'windows' => 'powershell',
+    },
+    tries   => $checker_tries,
+    timeout => $checker_timeout,
   }
 
+  # Manage the service specified in our parameters
   service { $service_name:
     ensure => $ensure,
     enable => $enable,
