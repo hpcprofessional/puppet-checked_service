@@ -1,0 +1,38 @@
+#!<%= @path_to_ruby %>
+#This code borrows very heavily from zabby's trigger.zby script
+
+require "rubygems"
+require "zabby"
+require "pp"
+
+z = Zabby.init do
+  set :server         => '<%= @zabbix_api_url %>'
+  set :user           => '<%= @zabbix_user %>'
+  set :password       => '<%= @zabbix_pass  %>'
+  set :proxy_host     => '<%= @zabbix_proxy  %>'
+  login
+end
+
+hh = Zabby::Host.get "filter" => {"name" => ["<%= @trigger_host %>"]}, "output" => "extend"
+
+for h in hh
+  hostid = "#{h['hostid']}"
+
+  tt = Zabby::Trigger.get "filter" => {"description" => "<%= @trigger_host %>"}, "hostids" => hostid, "output" => "extend"
+  if tt == []
+    exit 2 #No Trigger populated
+  end
+
+  for t in tt
+    if <%= @trigger_name %> == nil
+      exit 3 #Trigger description not found
+    elsif "value" == nil
+      exit 4 #"value" not found in trigger array data
+    else 
+      #0 = trigger ok, exit status okay
+      #1 = trigger fail, exit status fail
+      #2+ = trigger ??, exit status not okay (also negative values)
+      exit t["value"].to_i 
+    end
+  end
+end
