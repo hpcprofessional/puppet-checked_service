@@ -1,6 +1,22 @@
 #!<%= @path_to_ruby %>
 #This code borrows very heavily from zabby's trigger.zby script
 
+#Let's define some exit codes in case we need them:
+EXIT_TRIGGER_OKAY = 0
+EXIT_TRIGGER_FAIL = 1
+EXIT_UNKNOWN_ERROR = 999
+EXIT_INCORRECT_NUMBER_OF_ARGUMENTS = 1000
+EXIT_NO_TRIGGER_POPULATED = 1001
+EXIT_TRIGGER_DESCRIPTION_MISSING = 1002
+EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA=1003
+
+if ARGV.length != 2
+  exit EXIT_INCORRECT_NUMBER_OF_ARGUMENTS
+end
+
+trigger_host = ARGV[0] 
+trigger_name = ARGV[1]
+
 require "rubygems"
 require "zabby"
 require "pp"
@@ -13,26 +29,29 @@ z = Zabby.init do
   login
 end
 
-hh = Zabby::Host.get "filter" => {"name" => ["<%= @trigger_host %>"]}, "output" => "extend"
+hh = Zabby::Host.get "filter" => {"name" => [trigger_host]}, "output" => "extend"
 
 for h in hh
   hostid = "#{h['hostid']}"
 
-  tt = Zabby::Trigger.get "filter" => {"description" => "<%= @trigger_host %>"}, "hostids" => hostid, "output" => "extend"
+  tt = Zabby::Trigger.get "filter" => {"description" => trigger_host}, "hostids" => hostid, "output" => "extend"
   if tt == []
-    exit 2 #No Trigger populated
+    exit EXIT_NO_TRIGGER_POPULATED
   end
 
   for t in tt
-    if <%= @trigger_name %> == nil
-      exit 3 #Trigger description not found
+    if trigger_name == nil
+      exit EXIT_TRIGGER_DESCRIPTION_MISSING
     elsif "value" == nil
-      exit 4 #"value" not found in trigger array data
+      exit EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA
     else 
-      #0 = trigger ok, exit status okay
-      #1 = trigger fail, exit status fail
-      #2+ = trigger ??, exit status not okay (also negative values)
-      exit t["value"].to_i 
+      if t{"value"}.to_i == EXIT_TRIGGER_OKAY
+           exit EXIT_TRIGGER_OKAY
+      elsif t{"value"}.to_i == EXIT_TRIGGER_FAIL
+           exit EXIT_TRIGGER_FAIL
+      else
+           exit EXIT_UNKNOWN_ERROR
+      end
     end
   end
 end
