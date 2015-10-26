@@ -15,6 +15,7 @@ module MCollective
 <% unless scope.lookupvar("checked_service::checked_services").empty? -%>
 
         my_output = ''
+        my_error  = ''
 
 <% scope.lookupvar("checked_service::checked_services").each_key do |service| -%>
         cmd =  'puppet resource service <%= service %> ensure=stopped'
@@ -24,6 +25,12 @@ module MCollective
 <% end -%>
         reply[:message] = my_output
 
+        if my_error == ''
+          reply[:error] = 'none'
+        else
+          reply[:error] = my_error
+        end
+
       end
 
       # #
@@ -32,14 +39,20 @@ module MCollective
 <% unless scope.lookupvar("checked_service::checked_services").empty? -%>
 
         my_output = ''
+        my_error  = ''
 
 <% scope.lookupvar("checked_service::checked_services").each_key do |service| -%>
         cmd =  'puppet resource service <%= service %>'
-        reply[:status]  =  run(cmd, :stderr => :error, :stdout => my_output, :chomp => false, :environment => environment)
+        reply[:status]  =  run(cmd, :stderr => my_error, :stdout => my_output, :chomp => false, :environment => environment)
 
 <% end -%>
 <% end -%>
-      reply[:message] = my_output
+        reply[:message] = my_output
+        if my_error == ''
+          reply[:error] = 'none'
+        else
+          reply[:error] = my_error
+        end
       end
 
     end

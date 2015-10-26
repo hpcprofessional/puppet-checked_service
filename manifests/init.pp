@@ -12,7 +12,8 @@ class checked_service (
   $script_template = $::checked_service::params::script_template,
   $script_owner    = $::checked_service::params::script_owner,
   $script_group    = $::checked_service::params::script_group,
-  $path_to_ruby    = $::checked_service::params::path_to_ruby
+  $path_to_ruby    = $::checked_service::params::path_to_ruby,
+  $mco_lib_path    = $::checked_service::params::mco_lib_path,
 ) inherits checked_service::params {
 
   # Call out to hiera for a hash of services that we want to manage on this
