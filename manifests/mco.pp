@@ -1,6 +1,9 @@
-# This class creates an mcollective application so that a batch of services
-# can be easily, remotely, shut down.  It also offers the ability to check on
+# This class creates an mcollective agent so that a batch of services can be
+# easily, remotely, shut down.  It also offers the ability to check on
 # the status of a batch of services.
+#
+# For more on MCollective agents, start here:
+#   https://docs.puppetlabs.com/mcollective/simplerpc/agents.html
 
 class checked_service::mco {
 
