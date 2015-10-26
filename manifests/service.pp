@@ -11,7 +11,7 @@
 define checked_service::service (
   $service_name          = $title,
   $ensure                = 'running',
-  $enable                = 'true',
+  $enable                = true,
 
   $checker_argument      = $title,
   $checker_tries         = 4,
@@ -30,11 +30,11 @@ define checked_service::service (
     unless   => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} ${checker_argument}",
     before   => Service[$service_name],
     provider => $::kernel ? {
-      'Linux' => 'posix',
+      'Linux'   => 'posix',
       'windows' => 'powershell',
     },
-    tries   => $checker_tries,
-    timeout => $checker_timeout,
+    tries    => $checker_tries,
+    timeout  => $checker_timeout,
   }
 
   # Manage the service specified in our parameters

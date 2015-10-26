@@ -1,26 +1,23 @@
-metadata :name => "checked_service",
-         :description => "%DESCRIPTION%",
-         :author => "%AUTHOR%",
-         :license => "%LICENSE%",
-         :version => "%VERSION%",
-         :url => "%URL%",
-         :timeout => %TIMEOUT%
+metadata :name        => "checked_service tools",
+         :description => "Stops and provides status on a set of services",
+         :author      => "PuppetLabs Professional Services",
+         :license     => "None",
+         :version     => "1.0",
+         :url         => "None",
+         :timeout     => 60
 
-action "stopall", :description => "%ACTIONDESCRIPTION%" do
-     # Example Input
-     input :name,
-           :prompt => "%PROMPT%",
-           :description => "%DESCRIPTION%",
-           :type => %TYPE%,
-           :validation => '%VALIDATION%',
-           :optional => %OPTIONAL%,
-           :maxlength => %MAXLENGTH%
+action "stopall", :description => "Stops a set of services" do
+     display :always
 
-     # Example output
-     output :name,
-            :description => "%DESCRIPTION%",
-            :display_as => "%DISPLAYAS%"
+     output :message,
+            :description => "Response after attempting to stop",
+            :display_as  => "puppet output"
 end
 
-action "status", :description => "%ACTIONDESCRIPTION%" do
+action "status", :description => "Reports status on a set of services" do
+     display :always
+
+     output :message,
+            :description => "Response with status",
+            :display_as  => "puppet output"
 end
