@@ -15,6 +15,21 @@ class checked_service (
   $path_to_ruby    = $::checked_service::params::path_to_ruby
 ) inherits checked_service::params {
 
+  # Call out to hiera for a hash of services that we want to manage on this
+  # particular machine.
+  # See the 'tests' directory for an example yaml file that has this right.
+  # If hiera didn't come back with a list of services to manage, we print
+  # a warning.
+  $checked_services = hiera_hash('checked_service::services',undef)
+  if $checked_services != undef {
+    create_resources( checked_service::service, $checked_services )
+  }
+  else {
+    notify { 'hiera warning':
+      message => 'Note: hiera has no checked_service::services for this node',
+    }
+  }
+
   # Manage a simple Zabbix-checking script that accepts arguments for what
   # service' status to check, and how many times to retry if it's not ready yet.
   file { 'check service script':
@@ -30,19 +45,5 @@ class checked_service (
   # that will be using it.
   File['check service script'] -> Checked_service::Service <| |>
 
-  # Call out to hiera for a hash of services that we want to manage on this
-  # particular machine.  Then, hand that hash to create_resources().
-  # See the 'tests' directory for an example yaml file that has one.
-  # If hiera didn't come back with a list of services to manage, we print
-  # a warning.
-  $checked_services = hiera_hash('checked_service::services',undef)
-  if $checked_services != undef {
-    create_resources( checked_service::service, $checked_services )
-  }
-  else {
-    notify { 'hiera warning':
-      message => 'Note: hiera has no checked_service::services for this node',
-    }
-  }
 
 }
