@@ -1,3 +1,9 @@
+# This file provides code that is executed when the checked_service agent
+# is given an action of either 'stopall' or 'status'.
+#
+# For more information on writing MCollective agents, start here:
+#   https://docs.puppetlabs.com/mcollective/reference/plugins/ddl.html
+
 module MCollective
   module Agent
     class Checked_service<RPC::Agent
@@ -15,6 +21,7 @@ module MCollective
 <% unless scope.lookupvar("checked_service::checked_services").empty? -%>
 
         my_output = ''
+        my_error  = ''
 
 <% scope.lookupvar("checked_service::checked_services").each_key do |service| -%>
         cmd =  'puppet resource service <%= service %> ensure=stopped'
@@ -24,6 +31,12 @@ module MCollective
 <% end -%>
         reply[:message] = my_output
 
+        if my_error == ''
+          reply[:error] = 'none'
+        else
+          reply[:error] = my_error
+        end
+
       end
 
       # #
@@ -32,14 +45,20 @@ module MCollective
 <% unless scope.lookupvar("checked_service::checked_services").empty? -%>
 
         my_output = ''
+        my_error  = ''
 
 <% scope.lookupvar("checked_service::checked_services").each_key do |service| -%>
         cmd =  'puppet resource service <%= service %>'
-        reply[:status]  =  run(cmd, :stderr => :error, :stdout => my_output, :chomp => false, :environment => environment)
+        reply[:status]  =  run(cmd, :stderr => my_error, :stdout => my_output, :chomp => false, :environment => environment)
 
 <% end -%>
 <% end -%>
-      reply[:message] = my_output
+        reply[:message] = my_output
+        if my_error == ''
+          reply[:error] = 'none'
+        else
+          reply[:error] = my_error
+        end
       end
 
     end
