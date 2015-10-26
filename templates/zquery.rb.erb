@@ -4,11 +4,11 @@
 #Let's define some exit codes in case we need them:
 EXIT_TRIGGER_OKAY = 0
 EXIT_TRIGGER_FAIL = 1
-EXIT_UNKNOWN_ERROR = 999
-EXIT_INCORRECT_NUMBER_OF_ARGUMENTS = 1000
-EXIT_NO_TRIGGER_POPULATED = 1001
-EXIT_TRIGGER_DESCRIPTION_MISSING = 1002
-EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA=1003
+EXIT_UNKNOWN_ERROR = 99
+EXIT_INCORRECT_NUMBER_OF_ARGUMENTS = 100
+EXIT_NO_TRIGGER_POPULATED = 101
+EXIT_TRIGGER_DESCRIPTION_MISSING = 102
+EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA=103
 
 if ARGV.length != 2
   exit EXIT_INCORRECT_NUMBER_OF_ARGUMENTS
@@ -33,21 +33,24 @@ hh = Zabby::Host.get "filter" => {"name" => [trigger_host]}, "output" => "extend
 
 for h in hh
   hostid = "#{h['hostid']}"
+#  puts "hostid: #{h['hostid']}"
 
-  tt = Zabby::Trigger.get "filter" => {"description" => trigger_host}, "hostids" => hostid, "output" => "extend"
+  tt = Zabby::Trigger.get "filter" => {"description" => "#{trigger_name}"}, "hostids" => hostid, "output" => "extend"
+#    puts "tt: #{tt}"
   if tt == []
     exit EXIT_NO_TRIGGER_POPULATED
   end
 
   for t in tt
+# puts "t["value"]: #{t["value"]}"
     if trigger_name == nil
       exit EXIT_TRIGGER_DESCRIPTION_MISSING
     elsif "value" == nil
       exit EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA
     else 
-      if t{"value"}.to_i == EXIT_TRIGGER_OKAY
+      if t["value"].to_i == EXIT_TRIGGER_OKAY
            exit EXIT_TRIGGER_OKAY
-      elsif t{"value"}.to_i == EXIT_TRIGGER_FAIL
+      elsif t["value"].to_i == EXIT_TRIGGER_FAIL
            exit EXIT_TRIGGER_FAIL
       else
            exit EXIT_UNKNOWN_ERROR
