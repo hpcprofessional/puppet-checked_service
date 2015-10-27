@@ -6,14 +6,29 @@
 # module's README.md file.
 
 class checked_service (
-  # Parameters that govern the source and placement of a Zabbix checker script.
+  # Parameters that govern the source, placement and target of a Zabbix checker script.
   $script_dir      = $::checked_service::params::script_dir,
   $script_name     = $::checked_service::params::script_name,
   $script_template = $::checked_service::params::script_template,
   $script_owner    = $::checked_service::params::script_owner,
   $script_group    = $::checked_service::params::script_group,
-  $path_to_ruby    = $::checked_service::params::path_to_ruby
+  $path_to_ruby    = $::checked_service::params::path_to_ruby,
+  $zabbix_api_url  = hiera(checked_service::zabbix_api_url,undef),
+  $zabbix_user	   = hiera(checked_service::zabbix_user,undef),
+  $zabbix_pass	   = hiera(checked_service::zabbix_pass,undef),
+  $zabbix_proxy	   = hiera(checked_service::zabbix_proxy,undef),
+  $trigger_host	   = hiera(checked_service::trigger_host,undef),
+  $trigger_name	   = hiera(checked_service::trigger_name,undef),
 ) inherits checked_service::params {
+
+  #The check service script requiers a particular ruby gem to be present to 
+  # interface with Zabbix in a friendly way. It is placed in the 
+  # Puppet Enterprise 3 Ruby environment to ensure consistency. 
+  # (Please note, the provider changes in Puppet 4)
+  package { "zabby" :
+    ensure   => ['0.1.2'],
+    provider => "pe_gem",
+  }
 
   # Manage a simple Zabbix-checking script that accepts arguments for what
   # service' status to check, and how many times to retry if it's not ready yet.

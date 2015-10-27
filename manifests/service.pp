@@ -16,7 +16,7 @@ define checked_service::service (
   $checker_argument      = $title,
   $checker_tries         = 4,
   $checker_timeout       = 60,
-
+  $checker_triggers      = undef,
   $service_start_command = undef,
   $service_stop_command  = undef,
 ) {
@@ -24,10 +24,13 @@ define checked_service::service (
   # In case we're being declared directly, make sure the main class is here too.
   include checked_service
 
+  $service_data = hiera('checked_service::services')
+  $triggers = $service_data[$service_name]['checker_triggers']
+
   # Invoke the Zabbix checker
   exec { "Check prerequisite of ${service_name}":
-    command  => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} ${checker_argument}",
-    unless   => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} ${checker_argument}",
+    command  => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} \'${checker_triggers}\'",
+    unless   => "'${checked_service::path_to_ruby}' -- ${checked_service::script_dir}/${checked_service::script_name} \'${checker_triggers}\'",
     before   => Service[$service_name],
     provider => $::kernel ? {
       'Linux' => 'posix',
@@ -42,5 +45,4 @@ define checked_service::service (
     ensure => $ensure,
     enable => $enable,
   }
-
 }
