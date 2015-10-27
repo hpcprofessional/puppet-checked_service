@@ -31,6 +31,17 @@ class checked_service (
     provider => "pe_gem",
   }
 
+  # Manage a simple Zabbix-checking script that accepts arguments for what
+  # service' status to check, and how many times to retry if it's not ready yet.
+  file { 'check service script':
+    ensure  => file,
+    mode    => '0755',
+    owner   => $script_owner,
+    group   => $script_group,
+    path    => "${script_dir}/${script_name}",
+    content => template("checked_service/${script_name}.erb"),
+  }
+
   # Call out to hiera for a hash of services that we want to manage on this
   # particular machine.
   # See the 'tests' directory for an example yaml file that has this right.
