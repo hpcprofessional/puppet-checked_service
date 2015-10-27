@@ -3,7 +3,7 @@
 
 class checked_service::params {
 
-  $script_name     = 'check_service.rb'
+  $script_name     = 'zbx-query.rb'
   $script_template = $script_name
 
   case $::kernel {

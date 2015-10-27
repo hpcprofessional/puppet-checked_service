@@ -1,0 +1,108 @@
+#!<%= @path_to_ruby %>
+#Other than parse_args(), this code borrows very heavily from zabby's trigger.zby script
+
+#Let's define some exit codes in case we need them:
+EXIT_TRIGGER_OKAY = 0
+EXIT_TRIGGER_FAIL = 1
+EXIT_UNKNOWN_ERROR = 99
+EXIT_INCORRECT_NUMBER_OF_ARGUMENTS = 100
+EXIT_NO_TRIGGER_POPULATED = 101
+EXIT_TRIGGER_DESCRIPTION_MISSING = 102
+EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA = 103
+EXIT_TRIGGER_LIST_MALFORMED = 104
+
+#Required Gems
+require "rubygems"
+require "zabby"
+require "pp"
+
+def parse_args ()
+
+  #ARGV should look like this as it arrives:
+  #ARGV[0] = 'trigger_host1, trigger description 1, trigger_host 2, trigger description 2, ... trigger_host 4, trigger description 4'
+
+  #This would indicate we didn't get a single continuous string, or perhaps no argument at all
+  if ARGV.length != 1
+    exit EXIT_INCORRECT_NUMBER_OF_ARGUMENTS
+  end
+
+  #Split the long string into an array of trigger entries
+  entries = ARGV[0].split(',')
+  
+  #We expect an even number of entries or an odd number of commas. (Double check there's no final comma!)
+  if entries.length % 2 != 0
+    exit EXIT_TRIGGER_LIST_MALFORMED
+  end
+
+  #Let's initialize a new array
+  args= Array.[]
+
+  #We're going grab entries, two at a time, and give them to args. 
+  #args will become a string of two-element arrays, the trigger host followed by the trigger description.
+  while entries.length >=2 do
+    args.push(entries.shift(2))
+  end
+
+# args should look like this nexted array as it is passed back
+#  args = [
+#    ['trigger_host1','trigger description 1'],
+#    ['trigger_host2','trigger description 2'],
+#    ['trigger_host3','trigger description 3'],
+#    ['trigger_host4','trigger description 4']
+#  ]
+
+    return args
+end
+
+z = Zabby.init do
+  set :server         => '<%= @zabbix_api_url %>'
+  set :user           => '<%= @zabbix_user %>'
+  set :password       => '<%= @zabbix_pass  %>'
+  set :proxy_host     => '<%= @zabbix_proxy  %>'
+  login
+end
+
+triggers = parse_args()
+
+for trigger in triggers
+  trigger_host = trigger[0]
+  trigger_name = trigger[1]
+  puts "Processing >#{trigger_name}< for >#{trigger_host}<"
+
+  hh = Zabby::Host.get "filter" => {"name" => [trigger_host]}, "output" => "extend"
+
+  for h in hh
+    hostid = "#{h['hostid']}"
+    puts "hostid: #{h['hostid']}"
+
+    tt = Zabby::Trigger.get "filter" => {"description" => "#{trigger_name}"}, "hostids" => hostid, "output" => "extend"
+      puts "tt: #{tt}"
+    if tt == []
+      exit EXIT_NO_TRIGGER_POPULATED
+    end
+
+    for t in tt
+   puts "t[value]: #{t["value"]}"
+      if trigger_name == nil
+        exit EXIT_TRIGGER_DESCRIPTION_MISSING
+      elsif "value" == nil
+        exit EXIT_VALUE_NOT_FOUND_IN_TRIGGER_DATA
+      else 
+        if t["value"].to_i == EXIT_TRIGGER_OKAY
+          #If we make it to the end of loop without any failures, 
+          #we'll send success. Otherwise we don't want to get caught by
+          #the last else...
+          #exit EXIT_TRIGGER_OKAY
+        elsif t["value"].to_i == EXIT_TRIGGER_FAIL
+          #puts "Trigger #{trigger_name} failed on #{trigger_host}."
+          exit EXIT_TRIGGER_FAIL
+        else
+          exit EXIT_UNKNOWN_ERROR
+        end
+      end
+    end
+  end
+end
+
+#If we made it here, we should be good to return successfully
+exit EXIT_TRIGGER_OKAY
