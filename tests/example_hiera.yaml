@@ -1,3 +1,28 @@
+---
 checked_service::services:
-  httpd:
-    ensure: 'running'
+    service1:
+          ensure: 'running'
+          enable: 'yes'
+          checker_tries: 1
+          checker_timeout: 10
+          checker_arguments:
+           'host1,trigger description 1,
+            host2,trigger description 2,
+            host3,trigger description 3,
+            host4,trigger description 4,
+            host5,trigger description 5'
+    service2:
+          ensure: 'running'
+          enable: 'yes'
+          checker_tries: 1
+          checker_timeout: 10
+          checker_arguments:
+           'host6,trigger description 6,
+            host7,trigger description 7,
+            host8,trigger description 8,
+            host9,trigger description 9,
+            hostA,trigger description A'
+checked_service::zabbix_api_url: https://zabbix.puppetlabs.vm/zabbix/api_jsonrpc.php
+checked_service::zabbix_user: user1
+checked_service::zabbix_pass: 'secret'
+checked_service::zabbix_proxy: http://proxy.puppetlabs.vm:8000
