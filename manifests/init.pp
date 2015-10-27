@@ -21,6 +21,7 @@ class checked_service (
   $trigger_name	   = hiera(checked_service::trigger_name,undef),
 ) inherits checked_service::params {
 
+<<<<<<< HEAD
   #The check service script requiers a particular ruby gem to be present to 
   # interface with Zabbix in a friendly way. It is placed in the 
   # Puppet Enterprise 3 Ruby environment to ensure consistency. 
@@ -28,6 +29,21 @@ class checked_service (
   package { "zabby" :
     ensure   => ['0.1.2'],
     provider => "pe_gem",
+=======
+  # Call out to hiera for a hash of services that we want to manage on this
+  # particular machine.
+  # See the 'tests' directory for an example yaml file that has this right.
+  # If hiera didn't come back with a list of services to manage, we print
+  # a warning.
+  $checked_services = hiera_hash('checked_service::services',undef)
+  if $checked_services != undef {
+    create_resources( checked_service::service, $checked_services )
+  }
+  else {
+    notify { 'hiera warning':
+      message => 'Note: hiera has no checked_service::services for this node',
+    }
+>>>>>>> fnaard/master
   }
 
   # Manage a simple Zabbix-checking script that accepts arguments for what
@@ -45,19 +61,5 @@ class checked_service (
   # that will be using it.
   File['check service script'] -> Checked_service::Service <| |>
 
-  # Call out to hiera for a hash of services that we want to manage on this
-  # particular machine.  Then, hand that hash to create_resources().
-  # See the 'tests' directory for an example yaml file that has one.
-  # If hiera didn't come back with a list of services to manage, we print
-  # a warning.
-  $checked_services = hiera_hash('checked_service::services',undef)
-  if $checked_services != undef {
-    create_resources( checked_service::service, $checked_services )
-  }
-  else {
-    notify { 'hiera warning':
-      message => 'Note: hiera has no checked_service::services for this node',
-    }
-  }
 
 }
