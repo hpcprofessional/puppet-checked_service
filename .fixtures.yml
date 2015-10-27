@@ -1,0 +1,3 @@
+fixtures:
+  symlinks:
+    "checked_service": "#{source_dir}"

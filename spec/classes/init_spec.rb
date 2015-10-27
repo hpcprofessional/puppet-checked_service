@@ -1,7 +1,27 @@
 require 'spec_helper'
-describe 'checked_service' do
+describe 'checked_service', :type => :class do
+  let(:node) { 'gonzo.puppetlabs.vm' }
 
-  context 'with defaults for all parameters' do
-    it { should contain_class('checked_service') }
+  describe 'When called with no parameters on Linux' do
+    let(:facts) { {
+      :kernel => 'Linux',
+    } }
+
+    it {
+      should contain_class('checked_service')
+    }
+
   end
+
+  describe 'When called with no parameters on Windows' do
+    let(:facts) { {
+      :kernel => 'windows',
+    } }
+
+    it {
+      should contain_class('checked_service')
+    }
+
+  end
+
 end
