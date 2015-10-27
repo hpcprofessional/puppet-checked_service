@@ -44,4 +44,15 @@ describe 'checked_service', :type => :class do
     end
   end
 
+  describe 'When called with no parameters on OS X' do
+    let(:facts) { {
+      :kernel => 'Darwin',
+    } }
+    it do
+      expect {
+        should contain_class('checked_service')
+      }.to raise_error(Puppet::Error, /Linux and Windows/)
+    end
+  end
+
 end
