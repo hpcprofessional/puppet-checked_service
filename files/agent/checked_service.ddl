@@ -1,3 +1,10 @@
+# This file provides metadata on the checked_service MCollective agent, so that
+# help documentation can be automatically generated for this agent.
+#
+# For more on writing DDL files, see here:
+#  https://docs.puppetlabs.com/mcollective/reference/plugins/ddl.html
+
+# Overall metadata for the agent.
 metadata :name        => "checked_service tools",
          :description => "Stops and provides status on a set of services",
          :author      => "PuppetLabs Professional Services",
@@ -6,6 +13,7 @@ metadata :name        => "checked_service tools",
          :url         => "None",
          :timeout     => 60
 
+# Data Definition for the 'stopall' action.
 action "stopall", :description => "Stops a set of services" do
      display :always
 
@@ -14,6 +22,7 @@ action "stopall", :description => "Stops a set of services" do
             :display_as  => "puppet output"
 end
 
+# Data Definition for the 'status' action.
 action "status", :description => "Reports status on a set of services" do
      display :always
 

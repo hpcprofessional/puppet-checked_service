@@ -19,9 +19,9 @@ class checked_service (
   $zabbix_proxy	   = hiera(checked_service::zabbix_proxy,undef),
   $trigger_host	   = hiera(checked_service::trigger_host,undef),
   $trigger_name	   = hiera(checked_service::trigger_name,undef),
+  $mco_lib_path    = $::checked_service::params::mco_lib_path,
 ) inherits checked_service::params {
 
-<<<<<<< HEAD
   #The check service script requiers a particular ruby gem to be present to 
   # interface with Zabbix in a friendly way. It is placed in the 
   # Puppet Enterprise 3 Ruby environment to ensure consistency. 
@@ -29,7 +29,8 @@ class checked_service (
   package { "zabby" :
     ensure   => ['0.1.2'],
     provider => "pe_gem",
-=======
+  }
+
   # Call out to hiera for a hash of services that we want to manage on this
   # particular machine.
   # See the 'tests' directory for an example yaml file that has this right.
@@ -43,7 +44,6 @@ class checked_service (
     notify { 'hiera warning':
       message => 'Note: hiera has no checked_service::services for this node',
     }
->>>>>>> fnaard/master
   }
 
   # Manage a simple Zabbix-checking script that accepts arguments for what
@@ -60,6 +60,5 @@ class checked_service (
   # Make sure the script is there, before trying to manage any of the services
   # that will be using it.
   File['check service script'] -> Checked_service::Service <| |>
-
 
 }

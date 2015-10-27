@@ -43,12 +43,6 @@ def parse_args ()
     args.push(entries.shift(2))
   end
 
-#At the time of writing, the following Zabbix triggers return the states described:
-  #Pass
-     # ['utiappvmwebmq01','Health Check UCOMM1'],
-  #Fail
-     # ['3070-b','{HOST.NAME} SSL certificate expired'],
-
 # args should look like this nexted array as it is passed back
 #  args = [
 #    ['trigger_host1','trigger description 1'],

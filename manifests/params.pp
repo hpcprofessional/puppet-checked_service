@@ -12,12 +12,14 @@ class checked_service::params {
       $script_owner = 'Administrator'
       $script_group = 'Administrators'
       $path_to_ruby = 'C:\Program Files\Puppet Labs\Puppet Enterprise\sys\ruby\bin\ruby.exe'
+      $mco_lib_path = 'C:\ProgramData\PuppetLabs\mcollective\etc\plugins\mcollective'
     }
     'Linux': {
       $script_dir   = '/tmp'
       $script_owner = 'root'
       $script_group = 'root'
       $path_to_ruby = '/opt/puppet/bin/ruby'
+      $mco_lib_path = '/opt/puppet/libexec/mcollective/mcollective'
     }
     default: {
       # In the *very* unlikely case ..
