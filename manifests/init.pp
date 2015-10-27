@@ -6,7 +6,8 @@
 # module's README.md file.
 
 class checked_service (
-  # Parameters that govern the source, placement and target of a Zabbix checker script.
+  # Parameters that govern the source, placement and target of a Zabbix
+  # checker script.
   $script_dir      = $::checked_service::params::script_dir,
   $script_name     = $::checked_service::params::script_name,
   $script_template = $::checked_service::params::script_template,
@@ -26,9 +27,9 @@ class checked_service (
   # interface with Zabbix in a friendly way. It is placed in the
   # Puppet Enterprise 3 Ruby environment to ensure consistency.
   # (Please note, the provider changes in Puppet 4)
-  package { "zabby" :
-    ensure   => ['0.1.2'],
-    provider => "pe_gem",
+  package { 'zabby':
+    ensure   => '0.1.2',
+    provider => pe_gem,
   }
 
   # Call out to hiera for a hash of services that we want to manage on this
