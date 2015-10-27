@@ -22,24 +22,13 @@ class checked_service (
   $mco_lib_path    = $::checked_service::params::mco_lib_path,
 ) inherits checked_service::params {
 
-  #The check service script requiers a particular ruby gem to be present to 
-  # interface with Zabbix in a friendly way. It is placed in the 
-  # Puppet Enterprise 3 Ruby environment to ensure consistency. 
+  #The check service script requiers a particular ruby gem to be present to
+  # interface with Zabbix in a friendly way. It is placed in the
+  # Puppet Enterprise 3 Ruby environment to ensure consistency.
   # (Please note, the provider changes in Puppet 4)
   package { "zabby" :
     ensure   => ['0.1.2'],
     provider => "pe_gem",
-  }
-
-  # Manage a simple Zabbix-checking script that accepts arguments for what
-  # service' status to check, and how many times to retry if it's not ready yet.
-  file { 'check service script':
-    ensure  => file,
-    mode    => '0755',
-    owner   => $script_owner,
-    group   => $script_group,
-    path    => "${script_dir}/${script_name}",
-    content => template("checked_service/${script_name}.erb"),
   }
 
   # Call out to hiera for a hash of services that we want to manage on this
