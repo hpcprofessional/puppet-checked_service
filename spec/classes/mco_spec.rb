@@ -1,3 +1,10 @@
+# This file lays out some basic spec tests to perform on the module's
+# mco sub-class.
+#
+# For more information on rspec-puppet, start here:
+#
+#        http://rspec-puppet.com/tutorial/
+
 require 'spec_helper'
 describe 'checked_service::mco', :type => :class do
   let(:node) { 'gonzo.puppetlabs.vm' }
