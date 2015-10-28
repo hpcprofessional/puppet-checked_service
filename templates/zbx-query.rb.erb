@@ -19,7 +19,8 @@ require "pp"
 def parse_args ()
 
   #ARGV should look like this as it arrives:
-  #ARGV[0] = 'trigger_host1, trigger description 1, trigger_host 2, trigger description 2, ... trigger_host 4, trigger description 4'
+  #ARGV[0] = 'trigger_host1,trigger description 1,trigger_host 2,trigger description 2,...,trigger_host 4,trigger description 4'
+  #Note: this parser doesn't remove leading or trailing spaces. Spaces in descriptions are okay if verbatim in Zabbix.
 
   #This would indicate we didn't get a single continuous string, or perhaps no argument at all
   if ARGV.length != 1
