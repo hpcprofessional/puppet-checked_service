@@ -14,22 +14,21 @@ class checked_service (
   $script_owner    = $::checked_service::params::script_owner,
   $script_group    = $::checked_service::params::script_group,
   $path_to_ruby    = $::checked_service::params::path_to_ruby,
-  $zabbix_api_url  = hiera(checked_service::zabbix_api_url,undef),
-  $zabbix_user	   = hiera(checked_service::zabbix_user,undef),
-  $zabbix_pass	   = hiera(checked_service::zabbix_pass,undef),
-  $zabbix_proxy	   = hiera(checked_service::zabbix_proxy,undef),
-  $trigger_host	   = hiera(checked_service::trigger_host,undef),
-  $trigger_name	   = hiera(checked_service::trigger_name,undef),
+  $zabbix_api_url  = $::checked_service::params::zabbix_api_url,
+  $zabbix_user	   = $::checked_service::params::zabbix_user,
+  $zabbix_pass	   = $::checked_service::params::zabbix_pass,
+  $zabbix_proxy	   = $::checked_service::params::zabbix_proxy,
+  $gem_provider    = $::checked_service::params::gem_provider,
   $mco_lib_path    = $::checked_service::params::mco_lib_path,
 ) inherits checked_service::params {
 
-  #The check service script requiers a particular ruby gem to be present to
-  # interface with Zabbix in a friendly way. It is placed in the
-  # Puppet Enterprise 3 Ruby environment to ensure consistency.
-  # (Please note, the provider changes in Puppet 4)
+  # The check service script requiers a particular ruby gem to be present to
+  # interface with Zabbix in a friendly way. How to install it varies on a
+  # per-platform basis, so we load it from params.
+  # (Please note, the linux provider changes in Puppet 4 to "puppet_gem")
   package { 'zabby':
     ensure   => '0.1.2',
-    provider => pe_gem,
+    provider => $gem_provider,
   }
 
   # Call out to hiera for a hash of services that we want to manage on this
